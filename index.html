@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>મનપસંદ ચોઈસ (HKHM®) - Scratch & Win</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #fff0f5, #ffe6e6);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+    .card {
+      width: 90%;
+      max-width: 360px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+      text-align: center;
+      padding: 25px 20px;
+      margin-top: 30px;
+    }
+    .brand {
+      font-size: 1.6em;
+      font-weight: bold;
+      color: #d63384;
+      margin-bottom: 10px;
+    }
+    .thank {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #9b59b6;
+      margin-bottom: 15px;
+    }
+    .info {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    #scratch-area {
+      width: 100%;
+      height: 160px;
+      background: #ccc;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      user-select: none;
+      cursor: pointer;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .reward, .used {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 15px;
+      display: none;
+    }
+    .reward { color: #27ae60; }
+    .used { color: red; }
+    .footer {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #333;
+    }
+    .footer span {
+      display: block;
+      margin: 4px 0;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="brand">મનપસંદ ચોઈસ (HKHM®)</div>
+    <div class="thank">❤️ તમારું મનપસંદ ચોઈસ (HKHM®) પસંદ કરવા બદલ આપનો ખૂબ ખૂબ આભાર!</div>
+    <div class="info">🎁 નીચે સ્ક્રેચ કરો અને તમારું ઇનામ શોધો</div>
+
+    <div id="scratch-area">
+      <canvas id="scratch-canvas" width="300" height="160"></canvas>
+      <div id="reward-text" style="padding-top:55px;font-size:18px;font-weight:600;">Scratch Here</div>
+    </div>
+
+    <div class="reward" id="final-reward"></div>
+    <div class="used" id="used-message">⚠️ તમે આ સ્ક્રેચ કાર્ડ પહેલેથી ઉપયોગ કર્યો છે!</div>
+
+    <div class="footer">
+      <span>📸 Instagram: @hkhm_texttile</span>
+	  <span>📸 Instagram: @@manpasad_choice_surat</span>
+	  <span>📸 You Tube:  @HKHM_texttile</span>
+	  <span>📞 Call: +91 98252 99190</span>
+      <span>📞 Call: +91 98252 99195</span>
+    </div>
+  </div>
+
+  <script>
+    const rewardTextDiv = document.getElementById('reward-text');
+    const rewardDiv = document.getElementById('final-reward');
+    const scratchArea = document.getElementById('scratch-area');
+    const usedMessage = document.getElementById('used-message');
+    const canvas = document.getElementById('scratch-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // 🎯 7 Prizes with exact chances
+    const rewards = [
+      { text: '₹200 OFF (Above ₹999)', chance: 40 },
+      { text: '20% Discount On Any Purchase', chance: 40 },
+      { text: 'Buy 2 Get 1 Free', chance: 5 },
+      { text: 'Earbuds 🎧', chance: 5 },
+      { text: 'Better Luck Next Time 🤞', chance: 5 },
+      { text: 'Buy 1 Get 1 Free', chance: 2.5 },
+      { text: '50% Discount', chance: 2.5 }
+    ];
+
+    function pickReward() {
+      const rand = Math.random() * 100;
+      let total = 0;
+      for (let r of rewards) {
+        total += r.chance;
+        if (rand <= total) return r.text;
+      }
+      return rewards[rewards.length - 1].text;
+    }
+
+    let reward = localStorage.getItem('hkhm-reward');
+    let scratched = localStorage.getItem('hkhm-scratched') === 'yes';
+
+    if (scratched && reward) {
+      scratchArea.style.display = 'none';
+      usedMessage.style.display = 'block';
+      rewardDiv.style.display = 'block';
+      rewardDiv.innerHTML = `🎁 તમારું ઇનામ: <strong>${reward}</strong>`;
+    } else {
+      reward = pickReward();
+
+      // Setup scratch overlay
+      ctx.fillStyle = '#999';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      let isDrawing = false;
+      let revealed = false;
+
+      function getXY(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        return { x, y };
+      }
+
+      function draw(e) {
+        if (!isDrawing || revealed) return;
+        const { x, y } = getXY(e);
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        ctx.fill();
+        checkReveal();
+      }
+
+      function checkReveal() {
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let clearPixels = 0;
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] === 0) clearPixels++;
+        }
+        const cleared = clearPixels / (canvas.width * canvas.height) * 100;
+        if (cleared > 45 && !revealed) {
+          revealed = true;
+          localStorage.setItem('hkhm-scratched', 'yes');
+          localStorage.setItem('hkhm-reward', reward);
+          rewardDiv.innerHTML = `🎁 તમારું ઇનામ: <strong>${reward}</strong>`;
+          rewardDiv.style.display = 'block';
+          setTimeout(() => {
+            scratchArea.style.display = 'none';
+            usedMessage.style.display = 'block';
+          }, 2000);
+        }
+      }
+
+      canvas.addEventListener('mousedown', () => isDrawing = true);
+      canvas.addEventListener('mouseup', () => isDrawing = false);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('touchstart', () => isDrawing = true);
+      canvas.addEventListener('touchend', () => isDrawing = false);
+      canvas.addEventListener('touchmove', draw);
+    }
+  </script>
+</body>
+</html>
