@@ -100,6 +100,8 @@ function pickReward(){
    if(r<=sum) return x.text;
  }
 }
+localStorage.setItem("hkhm-used","yes");
+localStorage.setItem("hkhm-reward",reward);
 
 function initScratch(){
  const used = localStorage.getItem("hkhm-used");
@@ -171,3 +173,4 @@ initScratch();
 </script>
 </body>
 </html>
+
