@@ -1,175 +1,171 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>મનપસંદ ચોઈસ (HKHM®) - Scratch & Win</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vikram WinKey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --orange:#ff7a00; /* saffron */
+      --green:#0cb86a;  /* india green */
+      --blue:#1b57f2;   /* modern accent */
+      --bg:#0b0f14;
+      --card:#121826;
+      --muted:#9aa4b2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; color:#e9edf3;
+      background: radial-gradient(1000px 600px at 20% -10%, rgba(255,122,0,.18), transparent 60%),
+                  radial-gradient(900px 600px at 120% 0%, rgba(12,184,106,.18), transparent 60%),
+                  #0b0f14;
+      display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+    .wrap{ width:min(480px, 100%); }
 
-<style>
-body{
-  background: linear-gradient(to bottom, #fff0f5, #ffe6e6);
-  font-family: 'Segoe UI', sans-serif;
-  margin:0;
-  display:flex;
-  justify-content:center;
-}
-.card{
-  width:90%;
-  max-width:360px;
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 12px 28px rgba(0,0,0,0.15);
-  padding:25px 20px;
-  margin-top:30px;
-  text-align:center;
-}
-.brand{font-size:1.6em;font-weight:bold;color:#d63384}
-.thank{color:#9b59b6;margin:10px 0;font-weight:600}
-.info{color:#555;margin-bottom:15px}
-#scratch-area{
-  width:100%;
-  height:160px;
-  background:#ccc;
-  border-radius:12px;
-  position:relative;
-  overflow:hidden;
-}
-canvas{position:absolute;top:0;left:0}
-.reward{
-  display:none;
-  font-size:1.2em;
-  color:#27ae60;
-  font-weight:bold;
-  margin-top:15px
-}
-.used{
-  display:none;
-  color:red;
-  font-weight:bold;
-  margin-top:10px
-}
-.footer{margin-top:20px;font-size:0.95em}
-</style>
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      backdrop-filter: blur(6px);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px; padding:26px 22px; box-shadow:0 20px 60px rgba(0,0,0,.45);
+      animation: pop .6s ease;
+    }
+    @keyframes pop{ from{transform:translateY(10px); opacity:0} to{transform:none; opacity:1} }
+
+    .flag{width:64px; height:auto; display:block; margin:0 auto 8px; filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));}
+    .title{ text-align:center; font-weight:800; letter-spacing:.2px; margin:2px 0 8px; font-size:28px; }
+    .subtitle{ text-align:center; color:var(--muted); font-size:14px; margin-bottom:18px }
+
+    .badges{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:0 0 14px}
+    .badge{font-size:11px; color:#d8dee9; background:#1a2336; border:1px solid rgba(255,255,255,.08); padding:6px 10px; border-radius:999px}
+
+    label.block{display:block; font-weight:600; margin-top:14px; margin-bottom:8px}
+    .games{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .game{
+      display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; cursor:pointer;
+      background:#121a2b; border:1px solid rgba(255,255,255,.08);
+      transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .game:hover{ transform:translateY(-1px); border-color:rgba(255,255,255,.16); box-shadow:0 8px 20px rgba(0,0,0,.25)}
+    .game input{ accent-color:var(--green) }
+    .game .icon{font-size:18px}
+
+    .input{
+      width:100%; background:#121a2b; color:#e9edf3; border:1px solid rgba(255,255,255,.1); border-radius:12px;
+      padding:12px 14px; outline:none; transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    .input:focus{ border-color:var(--blue); box-shadow:0 0 0 4px rgba(27,87,242,.18) }
+    .hint{font-size:12px; color:var(--muted); margin-top:6px}
+    .warn{ display:none; color:#ff6767; font-size:13px; margin-top:8px; animation: flash .5s ease }
+    @keyframes flash{ from{opacity:0; transform:translateY(-2px)} to{opacity:1; transform:none} }
+
+    .btn{
+      margin-top:16px; width:100%; border:0; border-radius:14px; padding:14px 16px; font-weight:800; font-size:16px;
+      color:#071018; background:linear-gradient(90deg, var(--orange), var(--green)); cursor:pointer;
+      box-shadow:0 10px 30px rgba(255,122,0,.25), 0 10px 30px rgba(12,184,106,.18);
+      transition: transform .12s ease, filter .2s ease, opacity .2s ease;
+    }
+    .btn:disabled{opacity:.5; cursor:not-allowed; filter:grayscale(.3)}
+    .btn:not(:disabled):active{ transform:scale(.98) }
+
+    .progress{ display:none; height:10px; background:#101625; border-radius:999px; overflow:hidden; margin-top:14px; border:1px solid rgba(255,255,255,.08) }
+    .bar{ height:100%; width:0; background:linear-gradient(90deg, var(--orange), var(--green)); animation: fill 2.4s linear forwards }
+    @keyframes fill{ from{width:0} to{width:100%} }
+
+    .cta{
+      margin-top:18px; display:block; text-align:center; text-decoration:none; font-weight:700; color:#fff;
+      background: linear-gradient(90deg, #1b57f2, #06b6d4);
+      padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 12px 30px rgba(27,87,242,.25);
+    }
+
+    .meta{display:flex; justify-content:space-between; align-items:center; margin-top:14px; color:var(--muted); font-size:13px}
+
+    .footer{ text-align:center; color:#a6b0be; font-size:12px; margin-top:14px }
+    .footer strong{color:#fff}
+
+    /* Responsive */
+    @media (max-width:420px){
+      .title{font-size:24px}
+      .games{grid-template-columns:1fr}
+    }
+  </style>
 </head>
-
 <body>
-<div class="card">
-  <div class="brand">મનપસંદ ચોઈસ (HKHM®)</div>
-  <div class="thank">❤️ તમારું મનપસંદ ચોઈસ પસંદ કરવા બદલ આભાર!</div>
-  <div class="info">🎁 નીચે સ્ક્રેચ કરો અને તમારું ઇનામ શોધો</div>
+  <div class="wrap">
+    <div class="card">
+      <img src="https://flagcdn.com/w320/in.png" class="flag" alt="India Flag"/>
+      <div class="title">Vikram WinKey</div>
+      <div class="subtitle">Fast Signals • Made for India • INR</div>
 
-  <div id="scratch-area">
-    <canvas id="scratch-canvas" width="300" height="160"></canvas>
-    <div style="padding-top:60px;font-weight:600;">Scratch Here</div>
+      <div class="badges">
+        <div class="badge">🔒 Secure</div>
+        <div class="badge">✅ Verified</div>
+        <div class="badge">🇮🇳 Local Support</div>
+      </div>
+
+      <label class="block">Choose your game</label>
+      <div class="games">
+        <label class="game"><input type="radio" name="game" checked> <span class="icon">💥</span> Crash</label>
+        <label class="game"><input type="radio" name="game"> <span class="icon">✈️</span> Aviator</label>
+        <label class="game"><input type="radio" name="game"> <span class="icon">💎</span> Mines</label>
+        <label class="game"><input type="radio" name="game"> <span class="icon">🐔</span> Chicken Road</label>
+        <label class="game"><input type="radio" name="game"> <span class="icon">⚽</span> Penalty</label>
+      </div>
+
+      <label class="block" for="acc">1xBet Account ID</label>
+      <input id="acc" class="input" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" />
+      <div class="hint">Enter 10 digits • Currency: INR</div>
+      <div class="warn" id="warn">Please enter a valid 10-digit ID.</div>
+
+      <button class="btn" id="start" disabled>Start</button>
+      <div class="progress" id="progress"><div class="bar"></div></div>
+
+      <a class="cta" id="depositLink" href="https://refpa83698.com/L?tag=d_4481731m_2895c_abl&site=4481731&ad=2895&r=registration" target="_blank">💳 Make a Deposit</a>
+
+      <div class="meta">
+        <div>🔵 Online: <span id="online">143</span></div>
+        <div>⏳ Access closes in <span id="countdown">05:00</span></div>
+      </div>
+
+      <div class="footer">Made by <strong>HackerHouse</strong> • Bengaluru</div>
+    </div>
   </div>
 
-  <div class="reward" id="final-reward"></div>
-  <div class="used" id="used-message">⚠️ તમે આ સ્ક્રેચ કાર્ડ પહેલેથી ઉપયોગ કર્યો છે!</div>
+  <script>
+    // Countdown
+    let left = 300; const cd = document.getElementById('countdown');
+    setInterval(()=>{ if(left>0) left--; const m=Math.floor(left/60).toString().padStart(2,'0'); const s=(left%60).toString().padStart(2,'0'); cd.textContent=`${m}:${s}`; },1000);
 
-  <div class="footer">
-    <div>📸 Instagram: @hkhm_texttile</div>
-    <div>📸 Instagram: @manpasad_choice_surat</div>
-    <div>📸 You Tube:  @HKHM_texttile</div>
-	<div>📞 Call: +91 98252 99190</div>
-	<div>📞 Call: +91 98252 99195</div>
-  </div>
-</div>
+    // Online counter micro-variation
+    const onlineEl = document.getElementById('online');
+    setInterval(()=>{ const base = 140; const jitter = Math.floor(Math.random()*8)-4; onlineEl.textContent = base + jitter; }, 2500);
 
-<script>
-const canvas = document.getElementById("scratch-canvas");
-const ctx = canvas.getContext("2d");
-const rewardDiv = document.getElementById("final-reward");
-const usedMessage = document.getElementById("used-message");
+    // ID validation
+    const acc = document.getElementById('acc');
+    const start = document.getElementById('start');
+    const warn = document.getElementById('warn');
+    acc.addEventListener('input', ()=>{
+      const ok = /^\d{10}$/.test(acc.value);
+      start.disabled = !ok; warn.style.display = ok? 'none':'block';
+    });
 
-const rewards = [
- {text:"20% Discount", chance:65},
- {text:"25% Discount", chance:10},
- {text:"30% Discount", chance:10},
- {text:"35% Discount", chance:5},
- {text:"40% Discount", chance:5},
- {text:"45% Discount", chance:2.5},
- {text:"50% Discount", chance:2.5}
-];
+    // Start -> progress -> alert (INR)
+    const progress = document.getElementById('progress');
+    start.addEventListener('click', ()=>{
+      progress.style.display='block';
+      // restart bar animation
+      const bar = progress.querySelector('.bar');
+      bar.style.animation='none'; bar.offsetHeight; bar.style.animation='fill 2.4s linear forwards';
+      setTimeout(()=>{
+        alert('❌ Deposit of 300 INR not found. Please make a deposit and try again.');
+      }, 2400);
+    });
 
-let reward="", isDrawing=false, revealed=false;
-
-function pickReward(){
- let r=Math.random()*100, sum=0;
- for(let x of rewards){
-   sum+=x.chance;
-   if(r<=sum) return x.text;
- }
-}
-	
-function initScratch(){
- const used = localStorage.getItem("hkhm-used");
- const savedReward = localStorage.getItem("hkhm-reward");
-
- if(used && savedReward){
-   rewardDiv.innerHTML = `🎁 તમારું ઇનામ: <strong>${savedReward}</strong>`;
-   rewardDiv.style.display = "block";
-   usedMessage.style.display = "block";
-   canvas.style.display = "none";
-   return;
- }
-
- reward = pickReward();
- revealed = false;
- rewardDiv.style.display = "none";
- usedMessage.style.display = "none";
- canvas.style.display = "block";
-
- ctx.globalCompositeOperation = "source-over";
- ctx.fillStyle = "#999";
- ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-
-function getXY(e){
- const r=canvas.getBoundingClientRect();
- return {
-   x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,
-   y:(e.touches?e.touches[0].clientY:e.clientY)-r.top
- };
-}
-
-function draw(e){
- if(!isDrawing || revealed) return;
- const {x,y}=getXY(e);
- ctx.globalCompositeOperation="destination-out";
- ctx.beginPath();
- ctx.arc(x,y,25,0,Math.PI*2);
- ctx.fill();
- checkReveal();
-}
-
-function checkReveal(){
- const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
- let clear=0;
- for(let i=3;i<data.length;i+=4){
-   if(data[i]===0) clear++;
- }
- if(clear/(canvas.width*canvas.height)*100>45 && !revealed){
-   revealed=true;
-
-   localStorage.setItem("hkhm-used","yes");
-   localStorage.setItem("hkhm-reward",reward);
-
-   rewardDiv.innerHTML=`🎁 તમારું ઇનામ: <strong>${reward}</strong>`;
-   rewardDiv.style.display="block";
-   usedMessage.style.display="block";
- }
-}
-
-canvas.addEventListener("mousedown",()=>isDrawing=true);
-canvas.addEventListener("mouseup",()=>isDrawing=false);
-canvas.addEventListener("mousemove",draw);
-canvas.addEventListener("touchstart",()=>isDrawing=true);
-canvas.addEventListener("touchend",()=>isDrawing=false);
-canvas.addEventListener("touchmove",draw);
-
-initScratch();
-</script>
+    // Replace deposit link easily
+    // document.getElementById('depositLink').href = 'YOUR_OFFER_LINK_HERE';
+  </script>
 </body>
 </html>
-
-
