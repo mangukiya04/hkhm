@@ -1,175 +1,193 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>મનપસંદ ચોઈસ (HKHM®) - Scratch & Win</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mines Prediction Tool – Demo</title>
+  <style>
+    :root{
+      --bg1:#0f2027;--bg2:#203a43;--bg3:#2c5364;
+      --glass:rgba(255,255,255,.12);
+      --border:rgba(255,255,255,.25);
+      --green:#00ff9c;--red:#ff4d4d;--blue:#1da1f2;--yt:#ff0033;
+      --text:#eaf6ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:linear-gradient(120deg,var(--bg1),var(--bg2),var(--bg3));
+      background-size:400% 400%;
+      animation:bg 18s ease infinite;
+      display:flex;align-items:center;justify-content:center;
+    }
+    @keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-<style>
-body{
-  background: linear-gradient(to bottom, #fff0f5, #ffe6e6);
-  font-family: 'Segoe UI', sans-serif;
-  margin:0;
-  display:flex;
-  justify-content:center;
-}
-.card{
-  width:90%;
-  max-width:360px;
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 12px 28px rgba(0,0,0,0.15);
-  padding:25px 20px;
-  margin-top:30px;
-  text-align:center;
-}
-.brand{font-size:1.6em;font-weight:bold;color:#d63384}
-.thank{color:#9b59b6;margin:10px 0;font-weight:600}
-.info{color:#555;margin-bottom:15px}
-#scratch-area{
-  width:100%;
-  height:160px;
-  background:#ccc;
-  border-radius:12px;
-  position:relative;
-  overflow:hidden;
-}
-canvas{position:absolute;top:0;left:0}
-.reward{
-  display:none;
-  font-size:1.2em;
-  color:#27ae60;
-  font-weight:bold;
-  margin-top:15px
-}
-.used{
-  display:none;
-  color:red;
-  font-weight:bold;
-  margin-top:10px
-}
-.footer{margin-top:20px;font-size:0.95em}
-</style>
+    .app{
+      width:min(1100px,94vw);
+      backdrop-filter:blur(14px);
+      background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.06));
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,.35);
+      padding:18px 18px 14px;
+    }
+    header{
+      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:10px
+    }
+    .title{
+      font-weight:800;font-size:clamp(18px,3vw,28px);
+      letter-spacing:.3px
+    }
+    .platform{
+      display:flex;gap:8px;align-items:center
+    }
+    select,input{
+      background:var(--glass);border:1px solid var(--border);color:var(--text);
+      border-radius:12px;padding:10px 12px;outline:none
+    }
+    .platform span{opacity:.8}
+
+    .top{
+      display:grid;grid-template-columns:1.2fr .8fr;gap:14px
+    }
+    @media(max-width:900px){.top{grid-template-columns:1fr}}
+
+    .panel{
+      background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:14px
+    }
+
+    .grid{
+      display:grid;grid-template-columns:repeat(5,1fr);gap:10px;place-items:center;
+      margin-top:10px
+    }
+    .tile{
+      width:100%;aspect-ratio:1/1;max-width:120px;
+      display:grid;place-items:center;
+      border-radius:14px;border:1px solid var(--border);
+      background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), 0 10px 20px rgba(0,0,0,.25);
+      font-size:26px;cursor:pointer;transition:transform .2s, box-shadow .2s
+    }
+    .tile:hover{transform:translateY(-2px)}
+    .tile.safe{
+      color:#0b3;box-shadow:0 0 0 2px rgba(0,255,156,.25), 0 0 24px rgba(0,255,156,.45);
+      animation:pop .35s ease
+    }
+    .tile.mine{
+      color:#f33;box-shadow:0 0 0 2px rgba(255,77,77,.25), 0 0 24px rgba(255,77,77,.45);
+      animation:fade .35s ease
+    }
+    @keyframes pop{from{transform:scale(.85);opacity:.6}to{transform:scale(1);opacity:1}}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{
+      border:none;border-radius:14px;padding:12px 16px;color:#001;
+      font-weight:700;cursor:pointer;transition:transform .2s, box-shadow .2s
+    }
+    .predict{background:linear-gradient(135deg,#00ff9c,#7bffd0)}
+    .reset{background:linear-gradient(135deg,#ffd166,#ff9f1c)}
+    button:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+
+    .joins{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .tg{background:linear-gradient(135deg,#1da1f2,#4fc3ff);color:#002}
+    .yt{background:linear-gradient(135deg,#ff0033,#ff6a6a);color:#200}
+
+    .footer{
+      margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;opacity:.85
+    }
+    .toggle{display:flex;gap:6px;align-items:center}
+    .badge{font-size:12px;opacity:.7}
+
+    /* Light mode */
+    body.light{--bg1:#e6f7ff;--bg2:#f7f7ff;--bg3:#fff;--glass:rgba(0,0,0,.06);--border:rgba(0,0,0,.15);--text:#0b2233}
+  </style>
 </head>
-
 <body>
-<div class="card">
-  <div class="brand">મનપસંદ ચોઈસ (HKHM®)</div>
-  <div class="thank">❤️ તમારું મનપસંદ ચોઈસ પસંદ કરવા બદલ આભાર!</div>
-  <div class="info">🎁 નીચે સ્ક્રેચ કરો અને તમારું ઇનામ શોધો</div>
+  <div class="app">
+    <header>
+      <div class="title">Mines Prediction Tool <span class="badge">(Demo / Education)</span></div>
+      <div class="platform">
+        <span>Platform</span>
+        <select id="platform">
+          <option>Stake</option>
+          <option>1win</option>
+          <option>Tashan Win</option>
+          <option>Bet365</option>
+        </select>
+      </div>
+    </header>
 
-  <div id="scratch-area">
-    <canvas id="scratch-canvas" width="300" height="160"></canvas>
-    <div style="padding-top:60px;font-weight:600;">Scratch Here</div>
+    <div class="top">
+      <div class="panel">
+        <div><strong id="platformName">Stake</strong></div>
+        <div style="margin-top:8px">Enter Your Seeds</div>
+        <input id="seed" placeholder="Any text or number" />
+        <div class="grid" id="grid"></div>
+      </div>
+
+      <div class="panel">
+        <div class="controls">
+          <button class="predict" id="predict">Predict Safe Mines</button>
+          <button class="reset" id="reset">Reset Game</button>
+        </div>
+        <div class="joins">
+          <button class="tg">Join Telegram</button>
+          <button class="yt">Join YouTube</button>
+        </div>
+        <p class="badge" style="margin-top:10px">This is a visual demo. Results are randomized using the entered seed. It does not predict real gambling outcomes.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="toggle">
+        <input type="checkbox" id="mode" /> <label for="mode">Light mode</label>
+      </div>
+      <div>⚡️ Created by Fun Education</div>
+    </div>
   </div>
 
-  <div class="reward" id="final-reward"></div>
-  <div class="used" id="used-message">⚠️ તમે આ સ્ક્રેચ કાર્ડ પહેલેથી ઉપયોગ કર્યો છે!</div>
+  <script>
+    const gridEl = document.getElementById('grid');
+    const platformSel = document.getElementById('platform');
+    const platformName = document.getElementById('platformName');
+    const seedInput = document.getElementById('seed');
+    const predictBtn = document.getElementById('predict');
+    const resetBtn = document.getElementById('reset');
+    const mode = document.getElementById('mode');
 
-  <div class="footer">
-    <div>📸 Instagram: @hkhm_texttile</div>
-    <div>📸 Instagram: @manpasad_choice_surat</div>
-    <div>📸 You Tube:  @HKHM_texttile</div>
-	<div>📞 Call: +91 98252 99190</div>
-	<div>📞 Call: +91 98252 99195</div>
-  </div>
-</div>
+    const tiles = [];
+    function build(){
+      gridEl.innerHTML=''; tiles.length=0;
+      for(let i=0;i<25;i++){
+        const d=document.createElement('div'); d.className='tile'; d.textContent='?';
+        gridEl.appendChild(d); tiles.push(d);
+      }
+    }
+    build();
 
-<script>
-const canvas = document.getElementById("scratch-canvas");
-const ctx = canvas.getContext("2d");
-const rewardDiv = document.getElementById("final-reward");
-const usedMessage = document.getElementById("used-message");
+    platformSel.onchange=()=>platformName.textContent=platformSel.value;
 
-const rewards = [
- {text:"20% Discount", chance:65},
- {text:"25% Discount", chance:10},
- {text:"30% Discount", chance:10},
- {text:"35% Discount", chance:5},
- {text:"40% Discount", chance:5},
- {text:"45% Discount", chance:2.5},
- {text:"50% Discount", chance:2.5}
-];
+    function seededRandom(seed){
+      let h=2166136261>>>0; for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i); h=(h*16777619)>>>0}
+      return ()=>{h+=0x6D2B79F5; let t=Math.imul(h^h>>>15,1|h); t^=t+Math.imul(t^t>>>7,61|t); return ((t^t>>>14)>>>0)/4294967296}
+    }
 
-let reward="", isDrawing=false, revealed=false;
+    predictBtn.onclick=()=>{
+      const rnd = seededRandom(seedInput.value||Date.now().toString());
+      const idx=[...Array(25).keys()];
+      for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]}
+      const safe=new Set(idx.slice(0,5));
+      tiles.forEach((t,i)=>{
+        t.classList.remove('safe','mine');
+        if(safe.has(i)){t.classList.add('safe'); t.textContent='💎';}
+        else{t.classList.add('mine'); t.textContent='💣';}
+      });
+    }
 
-function pickReward(){
- let r=Math.random()*100, sum=0;
- for(let x of rewards){
-   sum+=x.chance;
-   if(r<=sum) return x.text;
- }
-}
-	
-function initScratch(){
- const used = localStorage.getItem("hkhm-used");
- const savedReward = localStorage.getItem("hkhm-reward");
-
- if(used && savedReward){
-   rewardDiv.innerHTML = `🎁 તમારું ઇનામ: <strong>${savedReward}</strong>`;
-   rewardDiv.style.display = "block";
-   usedMessage.style.display = "block";
-   canvas.style.display = "none";
-   return;
- }
-
- reward = pickReward();
- revealed = false;
- rewardDiv.style.display = "none";
- usedMessage.style.display = "none";
- canvas.style.display = "block";
-
- ctx.globalCompositeOperation = "source-over";
- ctx.fillStyle = "#999";
- ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-
-function getXY(e){
- const r=canvas.getBoundingClientRect();
- return {
-   x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,
-   y:(e.touches?e.touches[0].clientY:e.clientY)-r.top
- };
-}
-
-function draw(e){
- if(!isDrawing || revealed) return;
- const {x,y}=getXY(e);
- ctx.globalCompositeOperation="destination-out";
- ctx.beginPath();
- ctx.arc(x,y,25,0,Math.PI*2);
- ctx.fill();
- checkReveal();
-}
-
-function checkReveal(){
- const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
- let clear=0;
- for(let i=3;i<data.length;i+=4){
-   if(data[i]===0) clear++;
- }
- if(clear/(canvas.width*canvas.height)*100>45 && !revealed){
-   revealed=true;
-
-   localStorage.setItem("hkhm-used","yes");
-   localStorage.setItem("hkhm-reward",reward);
-
-   rewardDiv.innerHTML=`🎁 તમારું ઇનામ: <strong>${reward}</strong>`;
-   rewardDiv.style.display="block";
-   usedMessage.style.display="block";
- }
-}
-
-canvas.addEventListener("mousedown",()=>isDrawing=true);
-canvas.addEventListener("mouseup",()=>isDrawing=false);
-canvas.addEventListener("mousemove",draw);
-canvas.addEventListener("touchstart",()=>isDrawing=true);
-canvas.addEventListener("touchend",()=>isDrawing=false);
-canvas.addEventListener("touchmove",draw);
-
-initScratch();
-</script>
+    resetBtn.onclick=()=>build();
+    mode.onchange=()=>document.body.classList.toggle('light',mode.checked);
+  </script>
 </body>
 </html>
-
-
