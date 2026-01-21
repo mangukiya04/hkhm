@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mines Prediction Tool – Demo</title>
+  <title>Mines Prediction Tool</title>
   <style>
     :root{
       --bg1:#0f2027;--bg2:#203a43;--bg3:#2c5364;
@@ -107,7 +107,7 @@
 <body>
   <div class="app">
     <header>
-      <div class="title">Mines Prediction Tool <span class="badge">(Demo / Education)</span></div>
+      <div class="title">Mines Prediction Tool <span class="badge"></span></div>
       <div class="platform">
         <span>Platform</span>
         <select id="platform">
@@ -122,8 +122,11 @@
     <div class="top">
       <div class="panel">
         <div><strong id="platformName">Stake</strong></div>
-        <div style="margin-top:8px">Enter Your Seeds</div>
+        <div style="margin-top:8px">Enter Your Active Client Seeds</div>
         <input id="seed" placeholder="Any text or number" />
+<div style="margin-top:8px">Enter Your Active Server Seeds</div>
+        <input id="seed" placeholder="Any text or number" />
+        
         <div class="grid" id="grid"></div>
       </div>
 
@@ -136,7 +139,6 @@
           <button class="tg">Join Telegram</button>
           <button class="yt">Join YouTube</button>
         </div>
-        <p class="badge" style="margin-top:10px">This is a visual demo. Results are randomized using the entered seed. It does not predict real gambling outcomes.</p>
       </div>
     </div>
 
@@ -144,7 +146,7 @@
       <div class="toggle">
         <input type="checkbox" id="mode" /> <label for="mode">Light mode</label>
       </div>
-      <div>⚡️ Created by Fun Education</div>
+      <div>⚡️ Created by </div>
     </div>
   </div>
 
@@ -191,3 +193,4 @@
   </script>
 </body>
 </html>
+
